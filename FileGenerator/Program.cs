@@ -59,14 +59,14 @@
                 return content.Substring(0, lineLength);
             }
             
-            var position = Random.Next(0, 3);
+            var positionCase = Random.Next(0, 3);
 
-            if (position == 0)
+            if (positionCase == 0)
             {
                 return content + GenerateSubstring(lineLength - content.Length);
             }
 
-            if (position == 1)
+            if (positionCase == 1)
             {
                 return GenerateSubstring(lineLength - content.Length) + content;
             }
