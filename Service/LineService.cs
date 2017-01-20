@@ -5,6 +5,7 @@
     using System.Linq;
     using Database;
     using DataContracts;
+    using EntityFramework.BulkInsert.Extensions;
     using NLog;
 
     public class LineService : ILineService
@@ -20,11 +21,13 @@
                 {
                     using (var context = new LineContext())
                     {
-                        string line;
-                        while ((line = streamReader.ReadLine()) != null)
-                        {
-                            context.Lines.Add(new Line {Value = line});
-                        }
+                        var content = streamReader.ReadToEnd()
+                            .Split('\n');
+
+                        context.Configuration.AutoDetectChangesEnabled = false;
+                        context.Configuration.ValidateOnSaveEnabled = false;
+
+                        context.BulkInsert(content.Select(o => new Line {Value = o}));
                         context.SaveChanges();
                     }
                 }
@@ -46,6 +49,7 @@
                 using (var context = new LineContext())
                 {
                     var foundLines = context.Lines
+                        .AsNoTracking()
                         .Where(o => o.Value.Contains(substring))
                         .Select(o => o.Value)
                         .ToArray();

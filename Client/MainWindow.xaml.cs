@@ -42,6 +42,7 @@
         private void ButtonLoadFile_OnClick(object sender, RoutedEventArgs e)
         {
             ButtonLoadFile.IsEnabled = false;
+            ButtonLoadFile.Content = "WAIT...";
             var filename = TextBoxFilename.Text;
             _presenter.UploadFile(new FileInfo(filename));
         }
@@ -55,6 +56,7 @@
         {
             Dispatcher.Invoke(() => {
                 ProgressBarFileUploading.Value = 0;
+                ButtonLoadFile.Content = "Upload File";
                 ButtonLoadFile.IsEnabled = true;
                 MessageBox.Show(e.Message);
             });

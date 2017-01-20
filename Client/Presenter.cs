@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
 
     public class Presenter
@@ -19,6 +20,7 @@
             }
 
             Result result;
+            var stopwatch = new Stopwatch();
             using (var lineClient = new LineServiceClient())
             {
                 using (var stream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read))
@@ -26,16 +28,17 @@
                     using (var progressedStream = new ProgressedStream(stream))
                     {
                         progressedStream.ProgressChanged += ProgressedStreamOnProgressChanged;
+                        stopwatch.Start();
                         result = await lineClient.UploadFileAsync(fileInfo.FullName, fileInfo.Length, progressedStream);
+                        stopwatch.Stop();
                     }
                 }
             }
-
             if (result.Value)
             {
                 OnFileUploadingResult(new FileUploadingResultEventArgs
                 {
-                    Message = "The file is uploaded",
+                    Message = "The file is uploaded in " + stopwatch.ElapsedMilliseconds / 1000 + "s",
                     Result = FileUploadingResult.Ok,
                 });
             }
