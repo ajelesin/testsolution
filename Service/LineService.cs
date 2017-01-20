@@ -1,6 +1,7 @@
 ﻿namespace Service
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using Database;
@@ -18,20 +19,11 @@
             {
                 Logger.Info("UploadFile called");
                 using (var streamReader = new StreamReader(file.FileByteStream))
+                using (var context = new LineContext())
                 {
-                    using (var context = new LineContext())
-                    {
-                        var content = streamReader.ReadToEnd()
-                            .Split('\n');
-
-                        context.Configuration.AutoDetectChangesEnabled = false;
-                        context.Configuration.ValidateOnSaveEnabled = false;
-
-                        context.BulkInsert(content.Select(o => new Line {Value = o}));
-                        context.SaveChanges();
-                    }
+                    SecondStrategyUpload(context, streamReader);
                 }
-
+                
                 return new Result { Value = true };
             }
             catch (Exception ex)
@@ -75,6 +67,40 @@
                 Logger.Fatal(ex.ToString);
                 return null;
             }
+        }
+
+        private void FirstStrategyUpload(LineContext context, StreamReader streamReader)
+        {
+            var content = streamReader.ReadToEnd()
+                .Split('\n');
+
+            context.Configuration.AutoDetectChangesEnabled = false;
+            context.Configuration.ValidateOnSaveEnabled = false;
+
+            context.BulkInsert(content.Select(o => new Line { Value = o }));
+            context.SaveChanges();
+        }
+
+        private void SecondStrategyUpload(LineContext context, StreamReader streamReader)
+        {
+            context.Configuration.AutoDetectChangesEnabled = false;
+            context.Configuration.ValidateOnSaveEnabled = false;
+
+            string line;
+            var lines = new List<string>();
+            var i = 0;
+            while ((line = streamReader.ReadLine()) != null)
+            {
+                lines.Add(line);
+                if (++i % 10000 != 0) continue;
+
+                context.BulkInsert(lines.Select(o => new Line { Value = o }));
+                context.SaveChanges();
+                lines.Clear();
+            }
+
+            context.BulkInsert(lines.Select(o => new Line { Value = o }));
+            context.SaveChanges();
         }
     }
 }
