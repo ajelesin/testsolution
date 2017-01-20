@@ -59,6 +59,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Presenter.cs" />
+    <Compile Include="ProgressedStream.cs" />
     <Compile Include="Proxy.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

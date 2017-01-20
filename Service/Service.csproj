@@ -62,7 +62,6 @@
   <ItemGroup>
     <Compile Include="Database\Line.cs" />
     <Compile Include="Database\LineContext.cs" />
-    <Compile Include="ILineService.cs" />
     <Compile Include="Installer\ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -80,6 +79,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataContracts\DataContracts.csproj">
+      <Project>{1d34fc51-d8b9-4ebb-a7f4-858f99558810}</Project>
+      <Name>DataContracts</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

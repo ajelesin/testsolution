@@ -11,21 +11,70 @@
 
 
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-[System.ServiceModel.ServiceContractAttribute(Namespace="Service", ConfigurationName="ILineService")]
+[System.ServiceModel.ServiceContractAttribute(Namespace = "DataContracts", ConfigurationName = "ILineService")]
 public interface ILineService
 {
-    
-    [System.ServiceModel.OperationContractAttribute(Action="Service/ILineService/SaveLines", ReplyAction="Service/ILineService/SaveLinesResponse")]
-    bool SaveLines(string[] lines);
-    
-    [System.ServiceModel.OperationContractAttribute(Action="Service/ILineService/SaveLines", ReplyAction="Service/ILineService/SaveLinesResponse")]
-    System.Threading.Tasks.Task<bool> SaveLinesAsync(string[] lines);
-    
-    [System.ServiceModel.OperationContractAttribute(Action="Service/ILineService/FindLines", ReplyAction="Service/ILineService/FindLinesResponse")]
+
+    // CODEGEN: Generating message contract since the wrapper name (UploadedFile) of message UploadedFile does not match the default value (UploadFile)
+    [System.ServiceModel.OperationContractAttribute(Action = "DataContracts/ILineService/UploadFile", ReplyAction = "DataContracts/ILineService/UploadFileResponse")]
+    Result UploadFile(UploadedFile request);
+
+    [System.ServiceModel.OperationContractAttribute(Action = "DataContracts/ILineService/UploadFile", ReplyAction = "DataContracts/ILineService/UploadFileResponse")]
+    System.Threading.Tasks.Task<Result> UploadFileAsync(UploadedFile request);
+
+    [System.ServiceModel.OperationContractAttribute(Action = "DataContracts/ILineService/FindLines", ReplyAction = "DataContracts/ILineService/FindLinesResponse")]
     string[] FindLines(string substring);
-    
-    [System.ServiceModel.OperationContractAttribute(Action="Service/ILineService/FindLines", ReplyAction="Service/ILineService/FindLinesResponse")]
+
+    [System.ServiceModel.OperationContractAttribute(Action = "DataContracts/ILineService/FindLines", ReplyAction = "DataContracts/ILineService/FindLinesResponse")]
     System.Threading.Tasks.Task<string[]> FindLinesAsync(string substring);
+}
+
+[System.Diagnostics.DebuggerStepThroughAttribute()]
+[System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+[System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+[System.ServiceModel.MessageContractAttribute(WrapperName = "UploadedFile", WrapperNamespace = "DataContracts", IsWrapped = true)]
+public partial class UploadedFile
+{
+
+    [System.ServiceModel.MessageHeaderAttribute(Namespace = "DataContracts")]
+    public string FileName;
+
+    [System.ServiceModel.MessageHeaderAttribute(Namespace = "DataContracts")]
+    public long Length;
+
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "DataContracts", Order = 0)]
+    public System.IO.Stream FileByteStream;
+
+    public UploadedFile()
+    {
+    }
+
+    public UploadedFile(string FileName, long Length, System.IO.Stream FileByteStream)
+    {
+        this.FileName = FileName;
+        this.Length = Length;
+        this.FileByteStream = FileByteStream;
+    }
+}
+
+[System.Diagnostics.DebuggerStepThroughAttribute()]
+[System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+[System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+[System.ServiceModel.MessageContractAttribute(WrapperName = "Result", WrapperNamespace = "DataContracts", IsWrapped = true)]
+public partial class Result
+{
+
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "DataContracts", Order = 0)]
+    public bool Value;
+
+    public Result()
+    {
+    }
+
+    public Result(bool Value)
+    {
+        this.Value = Value;
+    }
 }
 
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -37,46 +86,67 @@ public interface ILineServiceChannel : ILineService, System.ServiceModel.IClient
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
 public partial class LineServiceClient : System.ServiceModel.ClientBase<ILineService>, ILineService
 {
-    
+
     public LineServiceClient()
     {
     }
-    
-    public LineServiceClient(string endpointConfigurationName) : 
+
+    public LineServiceClient(string endpointConfigurationName) :
             base(endpointConfigurationName)
     {
     }
-    
-    public LineServiceClient(string endpointConfigurationName, string remoteAddress) : 
+
+    public LineServiceClient(string endpointConfigurationName, string remoteAddress) :
             base(endpointConfigurationName, remoteAddress)
     {
     }
-    
-    public LineServiceClient(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : 
+
+    public LineServiceClient(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) :
             base(endpointConfigurationName, remoteAddress)
     {
     }
-    
-    public LineServiceClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
+
+    public LineServiceClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) :
             base(binding, remoteAddress)
     {
     }
-    
-    public bool SaveLines(string[] lines)
+
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    Result ILineService.UploadFile(UploadedFile request)
     {
-        return base.Channel.SaveLines(lines);
+        return base.Channel.UploadFile(request);
     }
-    
-    public System.Threading.Tasks.Task<bool> SaveLinesAsync(string[] lines)
+
+    public bool UploadFile(string FileName, long Length, System.IO.Stream FileByteStream)
     {
-        return base.Channel.SaveLinesAsync(lines);
+        UploadedFile inValue = new UploadedFile();
+        inValue.FileName = FileName;
+        inValue.Length = Length;
+        inValue.FileByteStream = FileByteStream;
+        Result retVal = ((ILineService)(this)).UploadFile(inValue);
+        return retVal.Value;
     }
-    
+
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    System.Threading.Tasks.Task<Result> ILineService.UploadFileAsync(UploadedFile request)
+    {
+        return base.Channel.UploadFileAsync(request);
+    }
+
+    public System.Threading.Tasks.Task<Result> UploadFileAsync(string FileName, long Length, System.IO.Stream FileByteStream)
+    {
+        UploadedFile inValue = new UploadedFile();
+        inValue.FileName = FileName;
+        inValue.Length = Length;
+        inValue.FileByteStream = FileByteStream;
+        return ((ILineService)(this)).UploadFileAsync(inValue);
+    }
+
     public string[] FindLines(string substring)
     {
         return base.Channel.FindLines(substring);
     }
-    
+
     public System.Threading.Tasks.Task<string[]> FindLinesAsync(string substring)
     {
         return base.Channel.FindLinesAsync(substring);

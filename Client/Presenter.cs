@@ -13,23 +13,30 @@
                 OnFileUploadingResult(new FileUploadingResultEventArgs
                 {
                     Message = "The file does not exist",
-                    Result = Client.FileUploadingResult.Fail,
+                    Result = FileUploadingResult.Fail,
                 });
                 return;
             }
 
-            bool success;
+            Result result;
             using (var lineClient = new LineServiceClient())
             {
-                success = await lineClient.SaveLinesAsync(File.ReadAllLines(fileInfo.FullName));
+                using (var stream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read))
+                {
+                    using (var progressedStream = new ProgressedStream(stream))
+                    {
+                        progressedStream.ProgressChanged += ProgressedStreamOnProgressChanged;
+                        result = await lineClient.UploadFileAsync(fileInfo.FullName, fileInfo.Length, progressedStream);
+                    }
+                }
             }
 
-            if (success)
+            if (result.Value)
             {
                 OnFileUploadingResult(new FileUploadingResultEventArgs
                 {
                     Message = "The file is uploaded",
-                    Result = Client.FileUploadingResult.Ok,
+                    Result = FileUploadingResult.Ok,
                 });
             }
             else
@@ -37,9 +44,18 @@
                 OnFileUploadingResult(new FileUploadingResultEventArgs
                 {
                     Message = "The file is not uploaded",
-                    Result = Client.FileUploadingResult.Fail
+                    Result = FileUploadingResult.Fail
                 });
             }
+        }
+
+        private void ProgressedStreamOnProgressChanged(object sender, ProgressedStream.ProgressChangedEventArgs e)
+        {
+            var percent = (e.Length == 0)
+                ? 0.0
+                : (double) e.BytesRead/(double) e.Length;
+
+            OnFileUploadingProgress(new FileUploadingProgressEventArgs {Percent = percent});
         }
 
         public async void FindLines(string substring)
@@ -66,23 +82,23 @@
             });
         }
 
-        public event Action<object, FileUploadingResultEventArgs> FileUploadingComplete;
-        public event Action<object, FileUploadingProgressEventArgs> FileUploadingProgress;
-        public event Action<object, LineSearchCompleteEventArgs> LineSearchComplete; 
+        public event EventHandler<FileUploadingResultEventArgs> FileUploadingComplete;
+        public event EventHandler<FileUploadingProgressEventArgs> FileUploadingProgress;
+        public event EventHandler<LineSearchCompleteEventArgs> LineSearchComplete; 
 
-        protected virtual void OnFileUploadingResult(FileUploadingResultEventArgs eventArgs)
+        protected virtual void OnFileUploadingResult(FileUploadingResultEventArgs e)
         {
-            FileUploadingComplete?.Invoke(this, eventArgs);
+            FileUploadingComplete?.Invoke(this, e);
         }
 
-        protected virtual void OnFileUploadingProgress(FileUploadingProgressEventArgs eventArgs)
+        protected virtual void OnFileUploadingProgress(FileUploadingProgressEventArgs e)
         {
-            FileUploadingProgress?.Invoke(this, eventArgs);
+            FileUploadingProgress?.Invoke(this, e);
         }
 
-        protected virtual void OnLineSearchComplete(LineSearchCompleteEventArgs eventArgs)
+        protected virtual void OnLineSearchComplete(LineSearchCompleteEventArgs e)
         {
-            LineSearchComplete?.Invoke(this, eventArgs);
+            LineSearchComplete?.Invoke(this, e);
         }
     }
 

@@ -1,12 +1,12 @@
-﻿namespace Service
+﻿namespace DataContracts
 {
     using System.ServiceModel;
 
-    [ServiceContract(Namespace = "Service")]
+    [ServiceContract(Namespace = "DataContracts")]
     public interface ILineService
     {
         [OperationContract]
-        bool SaveLines(string[] lines);
+        Result UploadFile(UploadedFile file);
         
         [OperationContract]
         string[] FindLines(string substring);

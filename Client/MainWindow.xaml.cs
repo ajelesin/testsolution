@@ -48,29 +48,33 @@
 
         private void FileUploadingProgress(object sender, FileUploadingProgressEventArgs e)
         {
-            ProgressBarFileUploading.Value = e.Percent;
+            Dispatcher.Invoke(() => ProgressBarFileUploading.Value = e.Percent);
         }
 
         private void FileUploadingComplete(object sender, FileUploadingResultEventArgs e)
         {
-            ProgressBarFileUploading.Value = 0;
-            ButtonLoadFile.IsEnabled = true;
-            MessageBox.Show(e.Message);
+            Dispatcher.Invoke(() => {
+                ProgressBarFileUploading.Value = 0;
+                ButtonLoadFile.IsEnabled = true;
+                MessageBox.Show(e.Message);
+            });
         }
 
         private void LineSearchComplete(object sender, LineSearchCompleteEventArgs e)
         {
-            ButtonFindLine.IsEnabled = true;
-            var lines = e.Result.ToList();
-            ListBoxFoundLines.Items.Clear();
-            if (lines.Count == 0)
-            {
-                MessageBox.Show("No lines found");
-            }
-            else
-            {
-                lines.ForEach(o => ListBoxFoundLines.Items.Add(o));
-            }
+            Dispatcher.Invoke(() => {
+                ButtonFindLine.IsEnabled = true;
+                var lines = e.Result.ToList();
+                ListBoxFoundLines.Items.Clear();
+                if (lines.Count == 0)
+                {
+                    MessageBox.Show("No lines found");
+                }
+                else
+                {
+                    lines.ForEach(o => ListBoxFoundLines.Items.Add(o));
+                }
+            });
         }
     }
 }

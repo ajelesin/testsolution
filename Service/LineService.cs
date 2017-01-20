@@ -1,31 +1,40 @@
 ﻿namespace Service
 {
     using System;
+    using System.IO;
     using System.Linq;
     using Database;
+    using DataContracts;
     using NLog;
 
     public class LineService : ILineService
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public bool SaveLines(string[] lines)
+        public Result UploadFile(UploadedFile file)
         {
             try
             {
-                Logger.Info("SaveLines called");
-                using (var context = new LineContext())
+                Logger.Info("UploadFile called");
+                using (var streamReader = new StreamReader(file.FileByteStream))
                 {
-                    context.Lines.AddRange(lines.Select(o => new Line {Value = o}));
-                    context.SaveChanges();
+                    using (var context = new LineContext())
+                    {
+                        string line;
+                        while ((line = streamReader.ReadLine()) != null)
+                        {
+                            context.Lines.Add(new Line {Value = line});
+                        }
+                        context.SaveChanges();
+                    }
                 }
 
-                return true;
+                return new Result { Value = true };
             }
             catch (Exception ex)
             {
                 Logger.Fatal(ex.ToString);
-                return false;
+                return new Result {Value = false };
             }
         }
 
