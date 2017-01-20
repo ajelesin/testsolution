@@ -9,6 +9,6 @@
         Result UploadFile(UploadedFile file);
         
         [OperationContract]
-        string[] FindLines(string substring);
+        SearchResult FindLines(string substring, int pageNo, int pageSize);
     }
 }

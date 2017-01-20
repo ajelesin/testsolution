@@ -8,6 +8,92 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+namespace DataContracts
+{
+    using System.Runtime.Serialization;
+
+
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name = "SearchResult", Namespace = "http://schemas.datacontract.org/2004/07/DataContracts")]
+    public partial class SearchResult : object, System.Runtime.Serialization.IExtensibleDataObject
+    {
+
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+
+        private string[] LinesField;
+
+        private int PageAmountField;
+
+        private int PageNoField;
+
+        private int PageSizeField;
+
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData
+        {
+            get
+            {
+                return this.extensionDataField;
+            }
+            set
+            {
+                this.extensionDataField = value;
+            }
+        }
+
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string[] Lines
+        {
+            get
+            {
+                return this.LinesField;
+            }
+            set
+            {
+                this.LinesField = value;
+            }
+        }
+
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int PageAmount
+        {
+            get
+            {
+                return this.PageAmountField;
+            }
+            set
+            {
+                this.PageAmountField = value;
+            }
+        }
+
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int PageNo
+        {
+            get
+            {
+                return this.PageNoField;
+            }
+            set
+            {
+                this.PageNoField = value;
+            }
+        }
+
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int PageSize
+        {
+            get
+            {
+                return this.PageSizeField;
+            }
+            set
+            {
+                this.PageSizeField = value;
+            }
+        }
+    }
+}
 
 
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -23,10 +109,10 @@ public interface ILineService
     System.Threading.Tasks.Task<Result> UploadFileAsync(UploadedFile request);
 
     [System.ServiceModel.OperationContractAttribute(Action = "DataContracts/ILineService/FindLines", ReplyAction = "DataContracts/ILineService/FindLinesResponse")]
-    string[] FindLines(string substring);
+    DataContracts.SearchResult FindLines(string substring, int pageNo, int pageSize);
 
     [System.ServiceModel.OperationContractAttribute(Action = "DataContracts/ILineService/FindLines", ReplyAction = "DataContracts/ILineService/FindLinesResponse")]
-    System.Threading.Tasks.Task<string[]> FindLinesAsync(string substring);
+    System.Threading.Tasks.Task<DataContracts.SearchResult> FindLinesAsync(string substring, int pageNo, int pageSize);
 }
 
 [System.Diagnostics.DebuggerStepThroughAttribute()]
@@ -142,13 +228,13 @@ public partial class LineServiceClient : System.ServiceModel.ClientBase<ILineSer
         return ((ILineService)(this)).UploadFileAsync(inValue);
     }
 
-    public string[] FindLines(string substring)
+    public DataContracts.SearchResult FindLines(string substring, int pageNo, int pageSize)
     {
-        return base.Channel.FindLines(substring);
+        return base.Channel.FindLines(substring, pageNo, pageSize);
     }
 
-    public System.Threading.Tasks.Task<string[]> FindLinesAsync(string substring)
+    public System.Threading.Tasks.Task<DataContracts.SearchResult> FindLinesAsync(string substring, int pageNo, int pageSize)
     {
-        return base.Channel.FindLinesAsync(substring);
+        return base.Channel.FindLinesAsync(substring, pageNo, pageSize);
     }
 }

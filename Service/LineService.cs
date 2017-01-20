@@ -41,7 +41,7 @@
             }
         }
 
-        public string[] FindLines(string substring)
+        public SearchResult FindLines(string substring, int pageNo, int pageSize)
         {
             try
             {
@@ -52,9 +52,22 @@
                         .AsNoTracking()
                         .Where(o => o.Value.Contains(substring))
                         .Select(o => o.Value)
-                        .ToArray();
+                        .ToList();
 
-                    return foundLines;
+                    var pageAmount = (int) Math.Floor((double) foundLines.Count / (double) pageSize);
+
+                    var displayedLines = foundLines
+                        .Skip((pageNo - 1)*pageSize)
+                        .Take(pageSize)
+                        .ToList();
+
+                    return new SearchResult
+                    {
+                        Lines = displayedLines,
+                        PageNo = pageNo,
+                        PageSize = pageSize,
+                        PageAmount = pageAmount
+                    };
                 }
             }
             catch (Exception ex)

@@ -14,6 +14,7 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
@@ -32,6 +33,13 @@
         <ProgressBar Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" x:Name="ProgressBarFileUploading" Margin="10,10,10,10" Height="32" Minimum="0" Maximum="1"/>
 
         <ListBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" x:Name="ListBoxFoundLines" />
+        <StackPanel Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="3" x:Name="PanelPages" Height="32" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button x:Name="ButtonFirst" Content="First" Width="63" Click="ButtonFirst_OnClick" />
+            <Button x:Name="ButtonPrevious" Content="Prev" Width="63" Click="ButtonPrevious_OnClick"/>
+            <Button x:Name="ButtonCurrent" Content="Curr" Width="63"/>
+            <Button x:Name="ButtonNext" Content="Next" Width="63" Click="ButtonNext_OnClick"/>
+            <Button x:Name="ButtonLast" Content="Last" Width="63" Click="ButtonLast_OnClick"/>
+        </StackPanel>
 
     </Grid>
 </Window>
