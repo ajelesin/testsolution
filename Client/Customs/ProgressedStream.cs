@@ -7,25 +7,25 @@
 
     public class ProgressedStream : Stream
     {
-        private readonly FileStream _file;
+        private readonly FileStream _stream;
         private readonly long _length;
         private long _bytesRead;
         private CancellationToken _token;
 
         public event EventHandler<ProgressChangedEventArgs> ProgressChanged;
 
-        public ProgressedStream(FileStream file, CancellationToken token = new CancellationToken())
+        public ProgressedStream(FileStream stream, CancellationToken token = new CancellationToken())
         {
             _token = token;
-            _file = file;
-            _length = file.Length;
+            _stream = stream;
+            _length = stream.Length;
             _bytesRead = 0;
             ProgressChanged?.Invoke(this, new ProgressChangedEventArgs {BytesRead = _bytesRead, Length = _length});
         }
 
         public double GetProgress()
         {
-            return ((double)_bytesRead) / _file.Length;
+            return ((double)_bytesRead) / _stream.Length;
         }
 
         public override bool CanRead => true;
@@ -54,7 +54,7 @@
                 throw new OperationCanceledException("Operation was cancelled", _token);
             }
 
-            var result = _file.Read(buffer, offset, count);
+            var result = _stream.Read(buffer, offset, count);
             _bytesRead += result;
             ProgressChanged?.Invoke(this, new ProgressChangedEventArgs { BytesRead = _bytesRead, Length = _length });
             return result;
