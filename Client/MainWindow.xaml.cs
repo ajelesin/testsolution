@@ -2,6 +2,7 @@
 {
     using System.IO;
     using System.Linq;
+    using System.Threading;
     using System.Windows;
     using Microsoft.Win32;
 
@@ -36,11 +37,8 @@
             ButtonLoadFile.IsEnabled = false;
 
             var filename = TextBoxFilename.Text;
-            var uploadResult = await _presenter.UploadFileAsync(new FileInfo(filename), (o, args) => {
-                Dispatcher.Invoke(() => {
-                    ProgressBarFileUploading.Value = args.Percent;
-                });
-            });
+            var uploadResult = await _presenter.UploadFileAsync(new FileInfo(filename),
+                new CancellationToken(), ProgressBarFileUploading);
 
             ButtonLoadFile.IsEnabled = true;
             ProgressBarFileUploading.Value = 0;
@@ -104,7 +102,7 @@
             ButtonLast.IsEnabled = true;
             ListBoxFoundLines.Items.Clear();
 
-            if (result.Result == OperationResult.Fail)
+            if (!result.Success)
             {
                 MessageBox.Show(result.Message);
                 return;

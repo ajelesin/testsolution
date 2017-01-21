@@ -3,85 +3,52 @@
     using System;
     using System.Diagnostics;
     using System.IO;
+    using System.Threading;
     using System.Threading.Tasks;
     using Customs;
-    using Enums;
-    using EventArgs;
-    using Responses;
+    using Results;
 
     public class Presenter
     {
-        public async Task<OperationResponse> UploadFileAsync(
-            FileInfo fileInfo,
-            EventHandler<ProgressEventArgs> progressChangedEventHandler = null)
+        public async Task<Result> UploadFileAsync(FileInfo fileInfo,
+            CancellationToken token = new CancellationToken(), IProgress<double> reporter = null)
         {
             if (fileInfo == null || !fileInfo.Exists)
             {
-                return new OperationResponse
-                {
-                    Message = "The file does not exist",
-                    Result = OperationResult.Fail,
-                };
+                return Result.FileNotExists();
             }
             
-
+            var stopwatch = new Stopwatch();
+            Response response;
             using (var lineClient = new LineServiceClient())
             using (var stream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read))
             using (var progressedStream = new ProgressedStream(stream))
             {
-                var stopwatch = new Stopwatch();
-
                 progressedStream.ProgressChanged += (sender, e) => {
-                    progressChangedEventHandler?.Invoke(sender, new ProgressEventArgs {
-                        Percent = (e.Length == 0) ? 0.0 : (double) e.BytesRead/(double) e.Length,
-                    });
+                    reporter?.Report((e.Length == 0) ? 0.0 : (double)e.BytesRead / (double)e.Length);
                 };
 
                 stopwatch.Start();
-                var result = await lineClient.UploadFileAsync(fileInfo.FullName, fileInfo.Length, progressedStream);
+                response = await lineClient.UploadFileAsync(fileInfo.FullName, fileInfo.Length, progressedStream);
                 stopwatch.Stop();
-
-                if (result.Success)
-                {
-                    return new OperationResponse
-                    {
-                        Message = "The file is uploaded in " + stopwatch.ElapsedMilliseconds / 1000 + "s",
-                        Result = OperationResult.Ok,
-                    };
-                }
-
-                return new OperationResponse
-                {
-                    Message = "The file is not uploaded",
-                    Result = OperationResult.Fail,
-                };
             }
+
+            return response.Success
+                ? Result.FileUploaded(stopwatch.ElapsedMilliseconds)
+                : Result.FileNotUploaded();
         }
 
-        public async Task<SearchLinesResponse> FindLinesAsync(string substring, int pageNo, int pageSize)
+        public async Task<SearchResult> FindLinesAsync(string substring, int pageNo, int pageSize)
         {
             if (string.IsNullOrWhiteSpace(substring))
             {
-                return new SearchLinesResponse
-                {
-                    Message = "Please enter a string to search",
-                    Result = OperationResult.Fail,
-                };
+                return Result.EmptySubstring();
             }
 
             using (var lineClient = new LineServiceClient())
             {
-                var result = await lineClient.FindLinesAsync(substring, pageNo, pageSize);
-
-                return new SearchLinesResponse
-                {
-                    Message = "Found",
-                    Result = OperationResult.Ok,
-                    FoundLines = result.Lines,
-                    PageSize = result.PageSize,
-                    PageNo = result.PageNo,
-                    PageAmount = result.PageAmount,
-                };
+                var response = await lineClient.FindLinesAsync(substring, pageNo, pageSize);
+                return Result.LinesFound(response.Lines, response.PageSize, response.PageNo, response.PageAmount);
             }
         }
     }

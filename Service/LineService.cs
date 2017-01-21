@@ -2,6 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Data;
+    using System.Data.Entity;
     using System.IO;
     using System.Linq;
     using Database;
@@ -72,38 +74,36 @@
             }
         }
 
-        //private static void UploadFile_Strategy1(LineContext context, StreamReader streamReader)
-        //{
-        //    var content = streamReader.ReadToEnd()
-        //        .Split('\n');
-
-        //    context.Configuration.AutoDetectChangesEnabled = false;
-        //    context.Configuration.ValidateOnSaveEnabled = false;
-
-        //    context.BulkInsert(content.Select(o => new Line { Value = o }));
-        //    context.SaveChanges();
-        //}
-
         private static void UploadFile_Strategy2(LineContext context, StreamReader streamReader)
         {
-            context.Configuration.AutoDetectChangesEnabled = false;
-            context.Configuration.ValidateOnSaveEnabled = false;
-
-            string line;
-            var lines = new List<string>();
-            var i = 0;
-            while ((line = streamReader.ReadLine()) != null)
+            using (var transaction = context.Database.BeginTransaction())
             {
-                lines.Add(line);
-                if (++i % 10000 != 0) continue;
+                try
+                {
+                    context.Configuration.AutoDetectChangesEnabled = false;
+                    context.Configuration.ValidateOnSaveEnabled = false;
 
-                context.BulkInsert(lines.Select(o => new Line { Value = o }));
-                context.SaveChanges();
-                lines.Clear();
+                    string line;
+                    var lines = new List<string>();
+                    var i = 0;
+                    while ((line = streamReader.ReadLine()) != null)
+                    {
+                        lines.Add(line);
+                        if (++i % 10000 != 0) continue;
+
+                        context.BulkInsert(lines.Select(o => new Line { Value = o }), transaction.UnderlyingTransaction);
+                        lines.Clear();
+                    }
+
+                    context.BulkInsert(lines.Select(o => new Line { Value = o }), transaction.UnderlyingTransaction);
+                    transaction.Commit();
+                }
+                catch (Exception)
+                {
+                    transaction?.Rollback();
+                    throw;
+                }
             }
-
-            context.BulkInsert(lines.Select(o => new Line { Value = o }));
-            context.SaveChanges();
         }
     }
 }
