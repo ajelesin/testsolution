@@ -1,43 +1,19 @@
 ﻿namespace Client
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Threading.Tasks;
-
-    public enum OperationResult
-    {
-        None = 0,
-        Ok,
-        Fail
-    }
-
-    public class ProgressEventArgs : EventArgs
-    {
-        public double Percent { get; set; }
-    }
-
-    public class OperationResponse
-    {
-        public string Message { get; set; }
-        public OperationResult Result { get; set; }
-    }
-
-    public class SearchLinesResponse : OperationResponse
-    {
-        public IEnumerable<string> FoundLines { get; set; }
-        public int PageNo { get; set; }
-        public int PageSize { get; set; }
-        public int PageAmount { get; set; }
-    }
-
+    using Customs;
+    using Enums;
+    using EventArgs;
+    using Responses;
 
     public class Presenter
     {
-        public event EventHandler<ProgressEventArgs> FileUploadingProgress;
-
-        public async Task<OperationResponse> UploadFileAsync(FileInfo fileInfo)
+        public async Task<OperationResponse> UploadFileAsync(
+            FileInfo fileInfo,
+            EventHandler<ProgressEventArgs> progressChangedEventHandler = null)
         {
             if (fileInfo == null || !fileInfo.Exists)
             {
@@ -54,12 +30,18 @@
             using (var progressedStream = new ProgressedStream(stream))
             {
                 var stopwatch = new Stopwatch();
-                progressedStream.ProgressChanged += ProgressedStreamOnProgressChanged;
+
+                progressedStream.ProgressChanged += (sender, e) => {
+                    progressChangedEventHandler?.Invoke(sender, new ProgressEventArgs {
+                        Percent = (e.Length == 0) ? 0.0 : (double) e.BytesRead/(double) e.Length,
+                    });
+                };
+
                 stopwatch.Start();
                 var result = await lineClient.UploadFileAsync(fileInfo.FullName, fileInfo.Length, progressedStream);
                 stopwatch.Stop();
 
-                if (result.Value)
+                if (result.Success)
                 {
                     return new OperationResponse
                     {
@@ -101,20 +83,6 @@
                     PageAmount = result.PageAmount,
                 };
             }
-        }
-
-        protected virtual void OnFileUploadingProgress(ProgressEventArgs e)
-        {
-            FileUploadingProgress?.Invoke(this, e);
-        }
-
-        private void ProgressedStreamOnProgressChanged(object sender, ProgressedStream.ProgressChangedEventArgs e)
-        {
-            var percent = (e.Length == 0)
-                ? 0.0
-                : (double)e.BytesRead / (double)e.Length;
-
-            OnFileUploadingProgress(new ProgressEventArgs { Percent = percent });
         }
     }
 }

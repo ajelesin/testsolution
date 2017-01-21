@@ -1,4 +1,4 @@
-﻿namespace DataContracts
+﻿namespace DataContracts.Requests
 {
     using System;
     using System.IO;
@@ -24,12 +24,5 @@
             FileByteStream.Close();
             FileByteStream = null;
         }
-    }
-
-    [MessageContract]
-    public class Result
-    {
-        [MessageBodyMember]
-        public bool Value { get; set; }
     }
 }

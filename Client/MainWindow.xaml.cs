@@ -20,8 +20,6 @@
         {
             InitializeComponent();
             _presenter = presenter;
-            
-            _presenter.FileUploadingProgress += FileUploadingProgress;
         }
 
         private void ButtonOpenFile_OnClick(object sender, RoutedEventArgs e)
@@ -38,7 +36,11 @@
             ButtonLoadFile.IsEnabled = false;
 
             var filename = TextBoxFilename.Text;
-            var uploadResult = await _presenter.UploadFileAsync(new FileInfo(filename));
+            var uploadResult = await _presenter.UploadFileAsync(new FileInfo(filename), (o, args) => {
+                Dispatcher.Invoke(() => {
+                    ProgressBarFileUploading.Value = args.Percent;
+                });
+            });
 
             ButtonLoadFile.IsEnabled = true;
             ProgressBarFileUploading.Value = 0;
@@ -113,13 +115,6 @@
 
             result.FoundLines.ToList().ForEach(o => ListBoxFoundLines.Items.Add(o));
             ButtonCurrent.Content = $"{result.PageNo}/{result.PageAmount}";
-        }
-
-        private void FileUploadingProgress(object sender, ProgressEventArgs e)
-        {
-            Dispatcher.Invoke(() => {
-                ProgressBarFileUploading.Value = e.Percent;
-            });
         }
     }
 }

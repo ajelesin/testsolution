@@ -59,9 +59,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Enums\OperationResult.cs" />
+    <Compile Include="EventArgs\ProgressChangedEventArgs.cs" />
+    <Compile Include="EventArgs\ProgressEventArgs.cs" />
     <Compile Include="Presenter.cs" />
-    <Compile Include="ProgressedStream.cs" />
+    <Compile Include="Customs\ProgressedStream.cs" />
     <Compile Include="Proxy.cs" />
+    <Compile Include="Responses\OperationResponse.cs" />
+    <Compile Include="Responses\SearchLinesResponse.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -6,6 +6,8 @@
     using System.Linq;
     using Database;
     using DataContracts;
+    using DataContracts.Requests;
+    using DataContracts.Responses;
     using EntityFramework.BulkInsert.Extensions;
     using NLog;
 
@@ -13,7 +15,7 @@
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public Result UploadFile(UploadedFile file)
+        public Response UploadFile(UploadedFile file)
         {
             try
             {
@@ -21,19 +23,19 @@
                 using (var streamReader = new StreamReader(file.FileByteStream))
                 using (var context = new LineContext())
                 {
-                    SecondStrategyUpload(context, streamReader);
+                    UploadFile_Strategy2(context, streamReader);
                 }
                 
-                return new Result { Value = true };
+                return new Response { Success = true };
             }
             catch (Exception ex)
             {
                 Logger.Fatal(ex.ToString);
-                return new Result {Value = false };
+                return new Response {Success = false };
             }
         }
 
-        public SearchResult FindLines(string substring, int pageNo, int pageSize)
+        public SearchResponse FindLines(string substring, int pageNo, int pageSize)
         {
             try
             {
@@ -53,8 +55,9 @@
                         .Take(pageSize)
                         .ToList();
 
-                    return new SearchResult
+                    return new SearchResponse
                     {
+                        Success = true,
                         Lines = displayedLines,
                         PageNo = pageNo,
                         PageSize = pageSize,
@@ -65,23 +68,23 @@
             catch (Exception ex)
             {
                 Logger.Fatal(ex.ToString);
-                return null;
+                return new SearchResponse { Success = false };
             }
         }
 
-        private void FirstStrategyUpload(LineContext context, StreamReader streamReader)
-        {
-            var content = streamReader.ReadToEnd()
-                .Split('\n');
+        //private static void UploadFile_Strategy1(LineContext context, StreamReader streamReader)
+        //{
+        //    var content = streamReader.ReadToEnd()
+        //        .Split('\n');
 
-            context.Configuration.AutoDetectChangesEnabled = false;
-            context.Configuration.ValidateOnSaveEnabled = false;
+        //    context.Configuration.AutoDetectChangesEnabled = false;
+        //    context.Configuration.ValidateOnSaveEnabled = false;
 
-            context.BulkInsert(content.Select(o => new Line { Value = o }));
-            context.SaveChanges();
-        }
+        //    context.BulkInsert(content.Select(o => new Line { Value = o }));
+        //    context.SaveChanges();
+        //}
 
-        private void SecondStrategyUpload(LineContext context, StreamReader streamReader)
+        private static void UploadFile_Strategy2(LineContext context, StreamReader streamReader)
         {
             context.Configuration.AutoDetectChangesEnabled = false;
             context.Configuration.ValidateOnSaveEnabled = false;

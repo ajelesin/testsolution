@@ -8,26 +8,21 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DataContracts
+namespace DataContracts.Responses
 {
     using System.Runtime.Serialization;
 
 
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name = "SearchResult", Namespace = "http://schemas.datacontract.org/2004/07/DataContracts")]
-    public partial class SearchResult : object, System.Runtime.Serialization.IExtensibleDataObject
+    [System.Runtime.Serialization.DataContractAttribute(Name = "Response", Namespace = "http://schemas.datacontract.org/2004/07/DataContracts.Responses")]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(DataContracts.Responses.SearchResponse))]
+    public partial class Response : object, System.Runtime.Serialization.IExtensibleDataObject
     {
 
         private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
 
-        private string[] LinesField;
-
-        private int PageAmountField;
-
-        private int PageNoField;
-
-        private int PageSizeField;
+        private bool SuccessField;
 
         public System.Runtime.Serialization.ExtensionDataObject ExtensionData
         {
@@ -40,6 +35,34 @@ namespace DataContracts
                 this.extensionDataField = value;
             }
         }
+
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool Success
+        {
+            get
+            {
+                return this.SuccessField;
+            }
+            set
+            {
+                this.SuccessField = value;
+            }
+        }
+    }
+
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name = "SearchResponse", Namespace = "http://schemas.datacontract.org/2004/07/DataContracts.Responses")]
+    public partial class SearchResponse : DataContracts.Responses.Response
+    {
+
+        private string[] LinesField;
+
+        private int PageAmountField;
+
+        private int PageNoField;
+
+        private int PageSizeField;
 
         [System.Runtime.Serialization.DataMemberAttribute()]
         public string[] Lines
@@ -103,16 +126,16 @@ public interface ILineService
 
     // CODEGEN: Generating message contract since the wrapper name (UploadedFile) of message UploadedFile does not match the default value (UploadFile)
     [System.ServiceModel.OperationContractAttribute(Action = "DataContracts/ILineService/UploadFile", ReplyAction = "DataContracts/ILineService/UploadFileResponse")]
-    Result UploadFile(UploadedFile request);
+    Response UploadFile(UploadedFile request);
 
     [System.ServiceModel.OperationContractAttribute(Action = "DataContracts/ILineService/UploadFile", ReplyAction = "DataContracts/ILineService/UploadFileResponse")]
-    System.Threading.Tasks.Task<Result> UploadFileAsync(UploadedFile request);
+    System.Threading.Tasks.Task<Response> UploadFileAsync(UploadedFile request);
 
     [System.ServiceModel.OperationContractAttribute(Action = "DataContracts/ILineService/FindLines", ReplyAction = "DataContracts/ILineService/FindLinesResponse")]
-    DataContracts.SearchResult FindLines(string substring, int pageNo, int pageSize);
+    DataContracts.Responses.SearchResponse FindLines(string substring, int pageNo, int pageSize);
 
     [System.ServiceModel.OperationContractAttribute(Action = "DataContracts/ILineService/FindLines", ReplyAction = "DataContracts/ILineService/FindLinesResponse")]
-    System.Threading.Tasks.Task<DataContracts.SearchResult> FindLinesAsync(string substring, int pageNo, int pageSize);
+    System.Threading.Tasks.Task<DataContracts.Responses.SearchResponse> FindLinesAsync(string substring, int pageNo, int pageSize);
 }
 
 [System.Diagnostics.DebuggerStepThroughAttribute()]
@@ -146,20 +169,20 @@ public partial class UploadedFile
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
 [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-[System.ServiceModel.MessageContractAttribute(WrapperName = "Result", WrapperNamespace = "DataContracts", IsWrapped = true)]
-public partial class Result
+[System.ServiceModel.MessageContractAttribute(WrapperName = "Response", WrapperNamespace = "DataContracts", IsWrapped = true)]
+public partial class Response
 {
 
     [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "DataContracts", Order = 0)]
-    public bool Value;
+    public bool Success;
 
-    public Result()
+    public Response()
     {
     }
 
-    public Result(bool Value)
+    public Response(bool Success)
     {
-        this.Value = Value;
+        this.Success = Success;
     }
 }
 
@@ -198,7 +221,7 @@ public partial class LineServiceClient : System.ServiceModel.ClientBase<ILineSer
     }
 
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    Result ILineService.UploadFile(UploadedFile request)
+    Response ILineService.UploadFile(UploadedFile request)
     {
         return base.Channel.UploadFile(request);
     }
@@ -209,17 +232,17 @@ public partial class LineServiceClient : System.ServiceModel.ClientBase<ILineSer
         inValue.FileName = FileName;
         inValue.Length = Length;
         inValue.FileByteStream = FileByteStream;
-        Result retVal = ((ILineService)(this)).UploadFile(inValue);
-        return retVal.Value;
+        Response retVal = ((ILineService)(this)).UploadFile(inValue);
+        return retVal.Success;
     }
 
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    System.Threading.Tasks.Task<Result> ILineService.UploadFileAsync(UploadedFile request)
+    System.Threading.Tasks.Task<Response> ILineService.UploadFileAsync(UploadedFile request)
     {
         return base.Channel.UploadFileAsync(request);
     }
 
-    public System.Threading.Tasks.Task<Result> UploadFileAsync(string FileName, long Length, System.IO.Stream FileByteStream)
+    public System.Threading.Tasks.Task<Response> UploadFileAsync(string FileName, long Length, System.IO.Stream FileByteStream)
     {
         UploadedFile inValue = new UploadedFile();
         inValue.FileName = FileName;
@@ -228,12 +251,12 @@ public partial class LineServiceClient : System.ServiceModel.ClientBase<ILineSer
         return ((ILineService)(this)).UploadFileAsync(inValue);
     }
 
-    public DataContracts.SearchResult FindLines(string substring, int pageNo, int pageSize)
+    public DataContracts.Responses.SearchResponse FindLines(string substring, int pageNo, int pageSize)
     {
         return base.Channel.FindLines(substring, pageNo, pageSize);
     }
 
-    public System.Threading.Tasks.Task<DataContracts.SearchResult> FindLinesAsync(string substring, int pageNo, int pageSize)
+    public System.Threading.Tasks.Task<DataContracts.Responses.SearchResponse> FindLinesAsync(string substring, int pageNo, int pageSize)
     {
         return base.Channel.FindLinesAsync(substring, pageNo, pageSize);
     }

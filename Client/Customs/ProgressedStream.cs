@@ -1,22 +1,16 @@
-﻿namespace Client
+﻿namespace Client.Customs
 {
     using System;
     using System.IO;
+    using EventArgs;
 
     public class ProgressedStream : Stream
     {
         private readonly FileStream _file;
         private readonly long _length;
-
-        public class ProgressChangedEventArgs : EventArgs
-        {
-            public long BytesRead { get; set; }
-            public long Length { get; set; }
-        }
+        private long _bytesRead;
 
         public event EventHandler<ProgressChangedEventArgs> ProgressChanged;
-
-        private long _bytesRead;
 
         public ProgressedStream(FileStream file)
         {
