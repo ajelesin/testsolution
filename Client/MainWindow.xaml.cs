@@ -16,6 +16,7 @@
         private const int PageSize = 25;
         private int _pageNo;
         private int _pageAmount;
+        private CancellationTokenSource _tokenSource;
 
         public MainWindow(Presenter presenter)
         {
@@ -35,12 +36,15 @@
         private async void ButtonLoadFile_OnClick(object sender, RoutedEventArgs e)
         {
             ButtonLoadFile.IsEnabled = false;
+            ButtonCancel.IsEnabled = true;
+            _tokenSource = new CancellationTokenSource();
 
             var filename = TextBoxFilename.Text;
             var uploadResult = await _presenter.UploadFileAsync(new FileInfo(filename),
-                new CancellationToken(), ProgressBarFileUploading);
+                _tokenSource.Token, ProgressBarFileUploading);
 
             ButtonLoadFile.IsEnabled = true;
+            ButtonCancel.IsEnabled = false;
             ProgressBarFileUploading.Value = 0;
 
             MessageBox.Show(uploadResult.Message);
@@ -113,6 +117,12 @@
 
             result.FoundLines.ToList().ForEach(o => ListBoxFoundLines.Items.Add(o));
             ButtonCurrent.Content = $"{result.PageNo}/{result.PageAmount}";
+        }
+
+        private void ButtonCancel_OnClick(object sender, RoutedEventArgs e)
+        {
+            _tokenSource?.Cancel();
+            ButtonCancel.IsEnabled = false;
         }
     }
 }

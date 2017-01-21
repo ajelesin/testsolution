@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Threading;
     using EventArgs;
 
     public class ProgressedStream : Stream
@@ -9,11 +10,13 @@
         private readonly FileStream _file;
         private readonly long _length;
         private long _bytesRead;
+        private CancellationToken _token;
 
         public event EventHandler<ProgressChangedEventArgs> ProgressChanged;
 
-        public ProgressedStream(FileStream file)
+        public ProgressedStream(FileStream file, CancellationToken token = new CancellationToken())
         {
+            _token = token;
             _file = file;
             _length = file.Length;
             _bytesRead = 0;
@@ -46,6 +49,11 @@
 
         public override int Read(byte[] buffer, int offset, int count)
         {
+            if (_token.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Operation was cancelled", _token);
+            }
+
             var result = _file.Read(buffer, offset, count);
             _bytesRead += result;
             ProgressChanged?.Invoke(this, new ProgressChangedEventArgs { BytesRead = _bytesRead, Length = _length });

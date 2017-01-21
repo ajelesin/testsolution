@@ -31,8 +31,9 @@
         <TextBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" x:Name="TextBoxFindLine" Margin="10,10,10,10" />
         <Button Grid.Column="2" Grid.Row="1" x:Name="ButtonFindLine" Margin="10,10,10,10" Content="Find Line" Click="ButtonFindLine_OnClick"/>
 
-        <!--<ProgressBar Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" x:Name="ProgressBarFileUploading" Margin="10,10,10,10" Height="32" Minimum="0" Maximum="1"/>-->
-        <customs:ReportedProgressBar Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" x:Name="ProgressBarFileUploading" Margin="10,10,10,10" Height="32" Minimum="0" Maximum="1" />
+        <customs:ReportedProgressBar Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" x:Name="ProgressBarFileUploading" Margin="10,10,10,10" Height="32" Minimum="0" Maximum="1" />
+        
+        <Button Grid.Column="2" Grid.Row="2" x:Name="ButtonCancel" Margin="10,10,10,10" Content="Cancel" IsEnabled="False" Click="ButtonCancel_OnClick" />
 
         <ListBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" x:Name="ListBoxFoundLines" />
         <StackPanel Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="3" x:Name="PanelPages" Height="32" Orientation="Horizontal" HorizontalAlignment="Center">

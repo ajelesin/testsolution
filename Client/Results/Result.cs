@@ -14,7 +14,12 @@
 
         public static Result Fail()
         {
-            return new Result {Success = false, Message = "Fail"};
+            return new Result {Success = false, Message = "Something realy bad"};
+        }
+
+        public static Result Cancelled()
+        {
+            return new Result {Success = false, Message = "Operation was cancelled"};
         }
 
         public static Result FileNotExists()
