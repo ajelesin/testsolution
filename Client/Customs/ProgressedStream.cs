@@ -49,10 +49,7 @@
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if (_token.IsCancellationRequested)
-            {
-                throw new OperationCanceledException("Operation was cancelled", _token);
-            }
+            _token.ThrowIfCancellationRequested();
 
             var result = _stream.Read(buffer, offset, count);
             _bytesRead += result;
